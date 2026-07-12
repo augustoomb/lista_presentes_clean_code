@@ -40,6 +40,74 @@ public class WishlistUseCaseTest {
     private WishlistUseCase wishlistUseCase;
 
     @Test
+    public void addProduct_sholdThrow_whenCustomerIdIsBlank() {
+        // 1. PREPARAÇÃO (Arrange)
+        // Aqui definimos um cenário onde o customerId está em branco e um productId válido.
+        String customerId = "   ";
+        String productId = "product456";
+
+        // NOTA: Como a validação acontece logo no início do método, o fluxo será interrompido
+        // ANTES de interagir com qualquer Mock. Portanto, não precisamos configurar nenhum 'when(...)'.
+
+        // 2 e 3. AÇÃO E VERIFICAÇÃO (Act & Assert)
+        // O assertThrows intercepta a execução e valida se a exceção correta foi lançada.
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            wishlistUseCase.addProduct(customerId, productId);
+        });
+
+        // Opcional: Garante que a mensagem da exceção é exatamente a que você escreveu no UseCase
+        assertEquals("customerId não pode ser nulo ou branco", exception.getMessage());
+
+        // Garante que o banco de dados sequer foi consultado, já que o código falhou antes
+        verifyNoInteractions(wishlistRepository);
+    }
+
+    @Test
+    public void addProduct_sholdThrow_whenCustomerIdIsNull() {
+        // 1. PREPARAÇÃO (Arrange)
+        String customerId = null; // Cenário com ID do cliente nulo
+        String productId = "product456";
+
+        // 2 & 3. AÇÃO E VERIFICAÇÃO (Act & Assert)
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            wishlistUseCase.addProduct(customerId, productId);
+        });
+
+        assertEquals("customerId não pode ser nulo ou branco", exception.getMessage());
+        verifyNoInteractions(wishlistRepository);
+    }
+
+    @Test
+    public void addProduct_sholdThrow_whenProductIdIsBlank() {
+        // 1. PREPARAÇÃO (Arrange)
+        String customerId = "customer123";
+        String productId = "   "; // Cenário com ID do produto em branco (espaços)
+
+        // 2 & 3. AÇÃO E VERIFICAÇÃO (Act & Assert)
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            wishlistUseCase.addProduct(customerId, productId);
+        });
+
+        assertEquals("productId não pode ser nulo ou branco", exception.getMessage());
+        verifyNoInteractions(wishlistRepository);
+    }
+
+    @Test
+    public void addProduct_sholdThrow_whenProductIdIsNull() {
+        // 1. PREPARAÇÃO (Arrange)
+        String customerId = "customer123";
+        String productId = null; // Cenário com ID do produto nulo
+
+        // 2 & 3. AÇÃO E VERIFICAÇÃO (Act & Assert)
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            wishlistUseCase.addProduct(customerId, productId);
+        });
+
+        assertEquals("productId não pode ser nulo ou branco", exception.getMessage());
+        verifyNoInteractions(wishlistRepository);
+    }
+
+    @Test
     public void testAddProduct_Success() {
         // 1. PREPARAÇÃO (Arrange)
         String customerId = "customer123";

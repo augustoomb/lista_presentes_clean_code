@@ -25,7 +25,22 @@ public class WishlistUseCase {
         this.wishlistPropertiesProvider = wishlistPropertiesProvider;
     }
 
+    private void validateCustomerId(String customerId) {
+        if (customerId == null || customerId.isBlank()) {
+            throw new IllegalArgumentException("customerId não pode ser nulo ou branco");
+        }
+    }
+
+    private void validateProductId(String productId) {
+        if (productId == null || productId.isBlank()) {
+            throw new IllegalArgumentException("productId não pode ser nulo ou branco");
+        }
+    }
+
     public void addProduct(String customerId, String productId) {
+
+        validateCustomerId(customerId);
+        validateProductId(productId);
 
         Wishlist wishlist = wishlistRepository.findByCustomerId(customerId)
                 .orElseGet(() -> new Wishlist(null, customerId, new HashSet<>()));
@@ -36,7 +51,7 @@ public class WishlistUseCase {
         }
 
         // validar aqui tamanho máximo da lista de desejos
-        if (wishlist.canAddProduct(wishlistPropertiesProvider.getMaxProducts())) {
+        if (!wishlist.canAddProduct(wishlistPropertiesProvider.getMaxProducts())) {
             throw new BusinessException("Limite de itens foi alcançado");
         }
 
@@ -46,6 +61,9 @@ public class WishlistUseCase {
     }
 
     public void removeProduct(String customerId, String productId) {
+
+        validateCustomerId(customerId);
+        validateProductId(productId);
 
         Wishlist wishlist = wishlistRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> new NotFoundException("Wishlist não encontrada"));
@@ -60,6 +78,9 @@ public class WishlistUseCase {
     }
 
     public void removeCustomerWishlist(String customerId) {
+
+        validateCustomerId(customerId);
+
         Wishlist wishlist = wishlistRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> new NotFoundException("Wishlist não encontrada"));
 
@@ -68,6 +89,9 @@ public class WishlistUseCase {
     }
 
     public ProductIdsResponse getAllProducts(String customerId) {
+
+        validateCustomerId(customerId);
+
         Optional<Wishlist> allProductsByCustomerId = wishlistRepository.findByCustomerId(customerId);
 
         Set<ProductId> productIds = allProductsByCustomerId

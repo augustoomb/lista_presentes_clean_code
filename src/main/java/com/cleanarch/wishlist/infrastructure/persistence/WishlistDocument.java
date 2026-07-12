@@ -25,6 +25,8 @@ public class WishlistDocument {
         return id;
     }
 
+    // 8:08
+
     public void setId(String id) {
         this.id = id;
     }
